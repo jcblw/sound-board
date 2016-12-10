@@ -39,5 +39,8 @@
   },
   "dependencies": {
     "eventemitter2": "^2.2.1"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
