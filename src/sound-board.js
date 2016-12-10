@@ -38,7 +38,7 @@ class SoundBoard extends EventEmitter2 {
     this.emit('frequencyData', bufferLength, dataArray)
   }
 
-  play (sound) {
+  play (sound, ...audioPref) {
     if (!this.isSupported) return
 
     const buffer = this.localSoundBuffers[sound]
@@ -55,7 +55,7 @@ class SoundBoard extends EventEmitter2 {
       }, 0)
     }
     this.emit('start', sound, source)
-    source.start(0)
+    source.start(...audioPref)
     this.getFrequencyData()
   }
 

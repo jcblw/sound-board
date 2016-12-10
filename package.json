@@ -1,6 +1,6 @@
 {
   "name": "sound-board",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple abstraction around web audio apis to make interactions easier for loading files and playing them.",
   "main": "dist/sound-board.js",
   "repository": {
