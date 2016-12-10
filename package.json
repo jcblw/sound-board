@@ -1,0 +1,43 @@
+{
+  "name": "sound-board",
+  "version": "0.1.0",
+  "description": "A simple abstraction around web audio apis to make interactions easier for loading files and playing them.",
+  "main": "dist/sound-board.js",
+  "repository": {
+    "url": "https://github.com/jcblw/sound-board.git",
+    "type": "git"
+  },
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "watch": "babel src --out-dir dist -w",
+    "prepublish": "npm run build",
+    "test": "standard && npm run build && nyc ava tests/*.spec.js"
+  },
+  "devDependencies": {
+    "ava": "^0.16.0",
+    "babel-cli": "^6.16.0",
+    "babel-preset-env": "^1.0.2",
+    "nyc": "^8.3.2",
+    "standard": "^8.4.0"
+  },
+  "author": "jcblw <jacoblowe2.0@gmail.com>",
+  "license": "MIT",
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "last 2 versions",
+              "safari >= 7"
+            ]
+          }
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "eventemitter2": "^2.2.1"
+  }
+}

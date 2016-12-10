@@ -1,0 +1,12 @@
+{
+  "name": "example-remote-file-play",
+  "dependencies": {
+    "webpack": "^1.14.0"
+  },
+  "scripts": {
+    "serve": "webpack-dev-server"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^1.16.2"
+  }
+}
