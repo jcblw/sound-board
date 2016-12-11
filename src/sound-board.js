@@ -65,7 +65,7 @@ class SoundBoard extends EventEmitter2 {
       }, 0)
     }
     this.emit('start', sound, source)
-    source.start(undefined, soundMeta.currentTime, ...audioPref)
+    source.start(0, soundMeta.currentTime, ...audioPref)
     this.getFrequencyData(soundMeta, audioAnalyser)()
   }
 
