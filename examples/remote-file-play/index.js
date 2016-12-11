@@ -5,9 +5,9 @@ soundBoard.downloadSound(
   'coin',
   './coin.mp3'
 )
-  .then(() =>
+  .then(() => {
     soundBoard.play('coin')
-  )
+  })
 
 soundBoard.on('start', (name, source) => {
   console.log(`started ${name}`)
@@ -16,7 +16,7 @@ soundBoard.on('start', (name, source) => {
   }, 5000)
 })
 
-soundBoard.on('frequencyData', (bufferLength, dataArray) => {
+soundBoard.on('frequencyData', (key, bufferLength, dataArray) => {
   const data = []
   const sliceWidth = 100 * 1.0 / bufferLength
   let x = 0

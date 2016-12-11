@@ -10,6 +10,9 @@ const {
 } = browserWindow
 const NOT_SUPPORTED = methodName =>
   new Error(`Soundboard cannot call ${methodName} because your current enviroment does not support web audio`)
+const ts = () => +(new Date())
+const toSeconds = tsp => tsp * 0.001
+const currentTime = tsp => toSeconds(ts()) - toSeconds(tsp)
 
 class SoundBoard extends EventEmitter2 {
   constructor (options = {}) {
@@ -21,42 +24,65 @@ class SoundBoard extends EventEmitter2 {
     this.isSupported = !!AudioContext
     try {
       this.audioContext = this.isSupported ? new AudioContext() : null
-      this.audioAnalyser = this.audioContext.createAnalyser()
     } catch (e) {
       this.isSupported = false
       this.audioContext = null
     }
   }
 
-  getFrequencyData () {
-    this.frequencyTimeout = setTimeout(
-      () => requestAnimationFrame(this.getFrequencyData)
-    , this.freqDurationTimeout)
-    const bufferLength = this.audioAnalyser.frequencyBinCount
-    const dataArray = new Uint8Array(bufferLength)
-    this.audioAnalyser.getByteTimeDomainData(dataArray)
-    this.emit('frequencyData', bufferLength, dataArray)
+  getFrequencyData (soundMeta, audioAnalyser) {
+    return () => {
+      soundMeta.timeout = setTimeout(() => requestAnimationFrame(
+        this.getFrequencyData(soundMeta, audioAnalyser)
+      ), this.freqDurationTimeout)
+      const bufferLength = audioAnalyser.frequencyBinCount
+      const dataArray = new Uint8Array(bufferLength)
+      audioAnalyser.getByteTimeDomainData(dataArray)
+      this.emit('frequencyData', soundMeta.key, bufferLength, dataArray)
+    }
   }
 
-  play (sound, ...audioPref) {
+  play (sound, currentTime, ...audioPref) {
     if (!this.isSupported) return
 
-    const buffer = this.localSoundBuffers[sound]
-    if (!buffer) return
+    const soundMeta = this.localSoundBuffers[sound]
+    if (!soundMeta) return
 
     const source = this.audioContext.createBufferSource()
+    const audioAnalyser = this.audioContext.createAnalyser()
+    const {buffer} = soundMeta
+    soundMeta.playTS = ts()
+    soundMeta.source = source
+    soundMeta.currentTime = currentTime || soundMeta.currentTime || 0
+    soundMeta.playing = true
     source.buffer = buffer
     source.connect(this.audioContext.destination)
-    source.connect(this.audioAnalyser)
+    source.connect(audioAnalyser)
     source.onended = () => {
-      clearTimeout(this.frequencyTimeout)
+      clearTimeout(soundMeta.timeout)
       setTimeout(() => {
         this.emit('end', sound)
       }, 0)
     }
     this.emit('start', sound, source)
-    source.start(...audioPref)
-    this.getFrequencyData()
+    source.start(soundMeta.currentTime, ...audioPref)
+    this.getFrequencyData(soundMeta, audioAnalyser)()
+  }
+
+  pause (sound) {
+    const soundMeta = this.localSoundBuffers[sound]
+    const {source} = soundMeta
+    soundMeta.currentTime = currentTime(soundMeta.playTS)
+    soundMeta.playing = false
+    source.stop()
+  }
+
+  getCurrentTime (sound) {
+    const soundMeta = this.localSoundBuffers[sound]
+    if (!soundMeta.playing) {
+      return soundMeta.currentTime
+    }
+    return soundMeta.currentTime + currentTime(soundMeta.playTS)
   }
 
   downloadSound (assignment, url) {
@@ -72,7 +98,7 @@ class SoundBoard extends EventEmitter2 {
       request.onload = () => {
         if (request.status < 399) {
           this.audioContext.decodeAudioData(request.response, (buffer) => {
-            this.localSoundBuffers[assignment] = buffer
+            this.localSoundBuffers[assignment] = {buffer, key: assignment}
             resolve(buffer)
           }, reject)
         } else {
