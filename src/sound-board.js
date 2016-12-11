@@ -72,7 +72,7 @@ class SoundBoard extends EventEmitter2 {
   pause (sound) {
     const soundMeta = this.localSoundBuffers[sound]
     const {source} = soundMeta
-    soundMeta.currentTime = currentTime(soundMeta.playTS)
+    soundMeta.currentTime = soundMeta.currentTime + currentTime(soundMeta.playTS)
     soundMeta.playing = false
     source.stop()
   }
