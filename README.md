@@ -1,11 +1,13 @@
 # Sound board
 
+[![Build Status](https://travis-ci.org/jcblw/sound-board.svg?branch=master)](https://travis-ci.org/jcblw/sound-board)
+
 A simple abstraction around web audio apis to make interactions easier for loading files and playing them.
 
 ### Install
 
 ```shell
-npm i sound-board
+npm i sound-board --save
 ```
 
 ### Usage
@@ -24,4 +26,22 @@ soundBoard.loadSounds({
 })
   .then(() => /* do stuff with sounds */)
   .catch(err => console.error(err)) // if something happens on a download
+
+// to play a sound at a certain time
+soundBoard.start('waterbowl', 1.337) // starts at 1.337 seconds
+
+// to pause the sound
+soundBoard.pause('waterbowl')
+
+// to stop the sound
+soundBoard.stop('waterbowl')
+```
+
+#### Events
+
+```javascript
+soundBoard.on('play', (soundName) => {}) // when starting to play the sound
+soundBoard.on('pause', (soundName) => {}) // when pausing the sound
+soundBoard.on('end', (soundName) => {}) // when the sound ends
+soundBoard.on('frequencyData', (soundName, bufferLength, dataArray) => {}) // some data when song is playing
 ```
