@@ -21,9 +21,12 @@ class SoundBoard extends EventEmitter2 {
     this.downloadSound = this.downloadSound.bind(this)
     this.getFrequencyData = this.getFrequencyData.bind(this)
     this.freqDurationTimeout = options.freqDurationTimeout || 0
-    this.isSupported = !!AudioContext
+    this.isSupported = !!AudioContext || !!options.AudioContext
+
+    const Context = AudioContext || options.AudioContext
+
     try {
-      this.audioContext = this.isSupported ? new AudioContext() : null
+      this.audioContext = this.isSupported ? new Context() : null
     } catch (e) {
       this.isSupported = false
       this.audioContext = null
