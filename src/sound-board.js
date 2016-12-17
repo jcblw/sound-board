@@ -32,6 +32,7 @@ class SoundBoard extends EventEmitter2 {
 
   getFrequencyData (soundMeta, audioAnalyser) {
     return () => {
+      if (!soundMeta.playing) return
       soundMeta.timeout = setTimeout(() => requestAnimationFrame(
         this.getFrequencyData(soundMeta, audioAnalyser)
       ), this.freqDurationTimeout)
@@ -55,26 +56,34 @@ class SoundBoard extends EventEmitter2 {
     soundMeta.source = source
     soundMeta.currentTime = currentTime || soundMeta.currentTime || 0
     soundMeta.playing = true
+    soundMeta.audioAnalyser = audioAnalyser
     source.buffer = buffer
-    source.connect(this.audioContext.destination)
     source.connect(audioAnalyser)
-    source.onended = () => {
-      clearTimeout(soundMeta.timeout)
-      setTimeout(() => {
-        this.emit('end', sound)
-      }, 0)
-    }
-    this.emit('start', sound, source)
+    audioAnalyser.connect(this.audioContext.destination)
+    source.onended = () => this.stop(sound)
+    this.emit('play', sound, source)
     source.start(0, soundMeta.currentTime, ...audioPref)
     this.getFrequencyData(soundMeta, audioAnalyser)()
   }
 
   pause (sound) {
     const soundMeta = this.localSoundBuffers[sound]
-    const {source} = soundMeta
+    const {source, audioAnalyser} = soundMeta
     soundMeta.currentTime = soundMeta.currentTime + currentTime(soundMeta.playTS)
     soundMeta.playing = false
     source.stop()
+    audioAnalyser.disconnect()
+    this.emit('pause', sound, source)
+  }
+
+  stop (sound) {
+    const soundMeta = this.localSoundBuffers[sound]
+    const {audioAnalyser} = soundMeta
+    clearTimeout(soundMeta.timeout)
+    soundMeta.currentTime = 0 // reset time
+    soundMeta.playing = false
+    audioAnalyser.disconnect()
+    setTimeout(() => this.emit('end', sound), 0)
   }
 
   getCurrentTime (sound) {
