@@ -12,6 +12,8 @@ npm i sound-board --save
 
 ### Usage
 
+#### Loading sound
+
 ```javascript
 import soundBoard from 'sound-board'
 
@@ -27,8 +29,17 @@ soundBoard.loadSounds({
   .then(() => /* do stuff with sounds */)
   .catch(err => console.error(err)) // if something happens on a download
 
+// or a local buffer
+soundBoard.loadBuffer('chime', arrbuffer)
+  .then(() => /* do stuff with sounds */)
+  .catch(err => console.error(err)) // if something happens on a download
+```
+
+#### Playing sound
+
+```javascript
 // to play a sound at a certain time
-soundBoard.start('waterbowl', 1.337) // starts at 1.337 seconds
+soundBoard.play('waterbowl', 1.337) // starts at 1.337 seconds
 
 // to pause the sound
 soundBoard.pause('waterbowl')
