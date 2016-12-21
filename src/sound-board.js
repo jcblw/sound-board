@@ -129,6 +129,15 @@ class SoundBoard extends EventEmitter2 {
     return Promise.all(downloadingSounds)
   }
 
+  loadBuffer (key, arrbuffer) {
+    return (new Promise((resolve, reject) => {
+      this.audioContext.decodeAudioData(arrbuffer, (buffer) => {
+        this.localSoundBuffers[key] = {buffer, key}
+        resolve(buffer)
+      }, reject)
+    }))
+  }
+
 }
 
 module.exports = new SoundBoard()
