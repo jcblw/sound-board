@@ -11,7 +11,7 @@
     "build": "babel src --out-dir dist",
     "watch": "babel src --out-dir dist -w",
     "prepublish": "npm run build",
-    "test": "standard && npm run build && nyc ava tests/*.spec.js"
+    "test": "standard && npm run build && nyc ava -v tests/*.spec.js"
   },
   "devDependencies": {
     "ava": "^0.16.0",
