@@ -9,6 +9,7 @@ class AudioContext {
   }
   createAnalyser () {
     return {
+      frequencyBinCount: 0,
       disconnect () {},
       connect () {},
       getByteTimeDomainData () {}

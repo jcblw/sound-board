@@ -27,8 +27,26 @@ test(
 test(
   'SoundBoard::getFrequencyData',
   t => {
-    const sb = new SoundBoard({AudioContext})
+    t.plan(7)
+    // freqDurationTimeout is long so we can easily cancel it
+    const sb = new SoundBoard({AudioContext, freqDurationTimeout: 9999999})
+    sb.on('frequencyData', (key, frequencyBinCount, dataArray) => {
+      t.is(key, 'bar')
+      t.is(frequencyBinCount, 0)
+      t.true(dataArray instanceof Uint8Array)
+    })
+
     t.is(typeof sb.getFrequencyData, 'function', 'getFrequencyData is a function')
     t.is(typeof sb.getFrequencyData(), 'function', 'getFrequencyData returns a function')
+
+    const foo = sb.getFrequencyData({playing: false})
+    t.is(foo(), undefined, 'getFrequencyData return function returns undefined when playing false is passed as the first param')
+
+    const analyser = (new AudioContext()).createAnalyser()
+    const soundMeta = {playing: true, key: 'bar'}
+    const bar = sb.getFrequencyData(soundMeta, analyser)
+    // now should trigger event binding to 'frequencyData'
+    t.is(bar(), undefined, 'getFrequencyData return function returns undefined when playing true is passed as the first param')
+    clearTimeout(soundMeta.timeout)
   }
 )
