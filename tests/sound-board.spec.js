@@ -98,3 +98,28 @@ test(
     t.true(soundMeta.audioAnalyser.isMock, 'the soundMeta audioAnalyser is the mocked analyser')
   }
 )
+
+test(
+  'SoundBoard::pause',
+  t => {
+    t.plan(5)
+    const sb = new SoundBoard({
+      AudioContext: AudioContext.of({
+        disconnect: () => t.pass('disconnect from the analyser is called'),
+        stop: () => t.pass('stop from the buffer source is called')
+      })
+    })
+    // mock up a loaded sound
+    const soundMeta = {
+      currentTime: 10,
+      audioAnalyser: sb.audioContext.createAnalyser(),
+      source: sb.audioContext.createBufferSource()
+    }
+    sb.localSoundBuffers['foo'] = soundMeta
+    sb.on('pause', (key) => {
+      t.is(key, 'foo', 'the correct sound key is emitted to the end event')
+    })
+    t.is(sb.pause('foo'), undefined, 'calling pause will return undefined')
+    t.is(soundMeta.playing, false, 'the playing key on the sounds meta data is set to false')
+  }
+)
