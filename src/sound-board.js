@@ -1,11 +1,9 @@
 import {EventEmitter2} from 'eventemitter2'
+import downloadSound from './download-sound'
+import browserWindow from './window'
 
-const browserWindow = typeof window === 'object'
-  ? window
-  : {}
 const {
   AudioContext,
-  XMLHttpRequest,
   requestAnimationFrame
 } = browserWindow
 const NOT_SUPPORTED = methodName =>
@@ -51,6 +49,9 @@ class SoundBoard extends EventEmitter2 {
 
     const soundMeta = this.localSoundBuffers[sound]
     if (!soundMeta) return
+
+    // based on soundMeta structure
+    // either audioContext.createBufferSource or audioContext.createMediaStreamSource
 
     const source = this.audioContext.createBufferSource()
     const audioAnalyser = this.audioContext.createAnalyser()
@@ -100,25 +101,10 @@ class SoundBoard extends EventEmitter2 {
   downloadSound (assignment, url) {
     return new Promise((resolve, reject) => {
       if (!this.isSupported) return reject(NOT_SUPPORTED('downloadSound'))
-
-      const request = new XMLHttpRequest()
-      request.open('GET', url, true)
-      request.responseType = 'arraybuffer'
-
-      // TODO: add in progress to send back rich
-      // meta about audio file loading
-      request.onload = () => {
-        if (request.status < 399) {
-          this.audioContext.decodeAudioData(request.response, (buffer) => {
-            this.localSoundBuffers[assignment] = {buffer, key: assignment}
-            resolve(buffer)
-          }, reject)
-        } else {
-          reject(request.response)
-        }
-      }
-      request.onerror = reject
-      request.send()
+      return downloadSound(url)
+        .then(arrbuffer => this.loadBuffer(assignment, arrbuffer))
+        .then(buff => resolve(buff))
+        .catch(reject)
     })
   }
 
