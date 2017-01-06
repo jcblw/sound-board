@@ -123,3 +123,19 @@ test(
     t.is(soundMeta.playing, false, 'the playing key on the sounds meta data is set to false')
   }
 )
+
+test(
+  'SoundBoard::setCurrentTime',
+  t => {
+    const sb = new SoundBoard()
+    sb.localSoundBuffers.foo = {}
+    sb.setCurrentTime('foo', 2)
+    t.is(sb.getCurrentTime('foo'), 2, 'The correct time is set in the meta data')
+
+    // playing test
+    sb.localSoundBuffers.bar = {playing: true}
+    sb.setCurrentTime('bar', 2)
+    sb.localSoundBuffers.bar = false // to get back clean value
+    t.is(sb.getCurrentTime('bar'), undefined, 'The correct time is not set in the meta data when sound is playing')
+  }
+)

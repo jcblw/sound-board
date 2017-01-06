@@ -97,6 +97,12 @@ class SoundBoard extends EventEmitter2 {
     return soundMeta.currentTime + currentTime(soundMeta.playTS)
   }
 
+  setCurrentTime (sound, time) {
+    const soundMeta = this.localSoundBuffers[sound]
+    if (!soundMeta || soundMeta.playing) return // do not set running time
+    soundMeta.currentTime = time
+  }
+
   downloadSound (assignment, url) {
     return new Promise((resolve, reject) => {
       if (!this.isSupported) return reject(NOT_SUPPORTED('downloadSound'))
