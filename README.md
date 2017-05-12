@@ -1,5 +1,7 @@
 # Sound board
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/jcblw/sound-board.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/jcblw/sound-board.svg?branch=master)](https://travis-ci.org/jcblw/sound-board)
 
 A simple abstraction around web audio apis to make interactions easier for loading files and playing them.
