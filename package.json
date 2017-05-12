@@ -14,11 +14,11 @@
     "test": "standard && npm run build && nyc ava -v tests/*.spec.js"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
+    "ava": "^0.19.1",
     "babel-cli": "^6.16.0",
     "babel-preset-env": "^1.0.2",
-    "nyc": "^8.3.2",
-    "standard": "^8.4.0"
+    "nyc": "^10.3.2",
+    "standard": "^10.0.2"
   },
   "author": "jcblw <jacoblowe2.0@gmail.com>",
   "license": "MIT",
@@ -38,7 +38,7 @@
     ]
   },
   "dependencies": {
-    "eventemitter2": "^2.2.1"
+    "eventemitter2": "^4.1.0"
   },
   "files": [
     "dist"
